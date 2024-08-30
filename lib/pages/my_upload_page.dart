@@ -13,6 +13,9 @@ class MyUploadPage extends StatefulWidget {
 }
 
 class _MyUploadPageState extends State<MyUploadPage> {
+  bool isLoading = false;
+  var captionController = TextEditingController();
+
   File? _image;
   final ImagePicker _picker = ImagePicker();
 
@@ -60,6 +63,16 @@ class _MyUploadPageState extends State<MyUploadPage> {
         });
   }
 
+  _uploadNewPost(){
+    String caption = captionController.text.toString().trim();
+    if(caption.isEmpty) return;
+    if(_image == null) return;
+
+    widget.pageController!.animateToPage(0,
+        duration: Duration(microseconds: 200),
+        curve: Curves.easeIn);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,9 +86,7 @@ class _MyUploadPageState extends State<MyUploadPage> {
           actions: [
             IconButton(
               onPressed: () {
-                widget.pageController!.animateToPage(0,
-                    duration: Duration(microseconds: 200),
-                    curve: Curves.easeIn);
+                _uploadNewPost();
               },
               icon: Icon(Icons.drive_folder_upload),
               color: Color.fromRGBO(193, 53, 132, 1),
@@ -138,6 +149,21 @@ class _MyUploadPageState extends State<MyUploadPage> {
                                   ),
                                 ],
                               ),
+                      ),
+                    ),
+
+                    Container(
+                      margin: EdgeInsets.only(left: 10, right: 10, top: 10),
+                      child: TextField(
+                        controller: captionController,
+                        style: TextStyle(color: Colors.black),
+                        keyboardType: TextInputType.multiline,
+                        minLines: 1,
+                        maxLines: 5,
+                        decoration: InputDecoration(
+                            hintText: "Caption",
+                            hintStyle:
+                                TextStyle(fontSize: 17, color: Colors.black38)),
                       ),
                     ),
                   ],
