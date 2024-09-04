@@ -24,14 +24,16 @@ class _MyFeedPageState extends State<MyFeedPage> {
   @override
   void initState() {
     super.initState();
-    var post1 = Post("avg=237290.30ms min=237290.30ms max=237290.30ms count=1", testImg1);
+    var post1 = Post(
+        "avg=237290.30ms min=237290.30ms max=237290.30ms count=1", testImg1);
     post1.fullname = "Xurshidbek";
     post1.img_user = userImg;
     post1.date = "2024-08-30 12:23";
     post1.liked = true;
     post1.mine = true;
 
-    var post2 = Post("avg=237290.30ms min=237290.30ms max=237290.30ms count=1", testImg2);
+    var post2 = Post(
+        "avg=237290.30ms min=237290.30ms max=237290.30ms count=1", testImg2);
     post2.fullname = "Begzodbek";
     post2.img_user = "";
     post2.date = "2024-08-20 08:20";
@@ -45,41 +47,41 @@ class _MyFeedPageState extends State<MyFeedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          title: const Text(
-            "Instagram",
-            style: TextStyle(
-                color: Colors.black, fontFamily: 'Billabong', fontSize: 30),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                widget.pageController!.animateToPage(2,
-                    duration: Duration(microseconds: 200),
-                    curve: Curves.easeIn);
-              },
-              icon: Icon(Icons.camera_alt),
-              color: Color.fromRGBO(193, 53, 132, 1),
-            ),
-          ],
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          "Instagram",
+          style: TextStyle(
+              color: Colors.black, fontFamily: 'Billabong', fontSize: 30),
         ),
-        body: Stack(
-          children: [
-            ListView.builder(
-              itemCount: items.length,
-              itemBuilder: (ctx, index) {
-                return _itemOfPost(items[index]);
-              },
-            ),
-            isLoading
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : SizedBox.shrink(),
-          ],
-        ));
+        actions: [
+          IconButton(
+            onPressed: () {
+              widget.pageController!.animateToPage(2,
+                  duration: Duration(microseconds: 200), curve: Curves.easeIn);
+            },
+            icon: Icon(Icons.camera_alt),
+            color: Color.fromRGBO(193, 53, 132, 1),
+          ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          ListView.builder(
+            itemCount: items.length,
+            itemBuilder: (ctx, index) {
+              return _itemOfPost(items[index]);
+            },
+          ),
+          isLoading
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : SizedBox.shrink(),
+        ],
+      ),
+    );
   }
 
   Widget _itemOfPost(Post post) {
@@ -195,12 +197,9 @@ class _MyFeedPageState extends State<MyFeedPage> {
               softWrap: true,
               overflow: TextOverflow.visible,
               text: TextSpan(
-                text: post.caption,
-                style: TextStyle(color: Colors.black)
-              ),
+                  text: post.caption, style: TextStyle(color: Colors.black)),
             ),
           ),
-
         ],
       ),
     );
