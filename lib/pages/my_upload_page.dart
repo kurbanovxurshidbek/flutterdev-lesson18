@@ -2,6 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instaclone/services/db_service.dart';
+import 'package:instaclone/services/file_service.dart';
+
+import '../model/post_model.dart';
 
 class MyUploadPage extends StatefulWidget {
   final PageController? pageController;
@@ -67,10 +71,32 @@ class _MyUploadPageState extends State<MyUploadPage> {
     String caption = captionController.text.toString().trim();
     if(caption.isEmpty) return;
     if(_image == null) return;
+    _apiPostImage(caption);
+  }
 
-    widget.pageController!.animateToPage(0,
-        duration: Duration(microseconds: 200),
-        curve: Curves.easeIn);
+  _apiPostImage(String caption)async{
+    setState(() {
+      isLoading = true;
+    });
+
+    String downloadUrl = await FileService.uploadPostImage(_image!);
+    Post post = Post(caption, downloadUrl);
+    _apiStorePost(post);
+  }
+
+  _apiStorePost(Post post)async{
+    Post posted = await DbService.storePost(post);
+    _moveToFeed();
+  }
+
+  _moveToFeed(){
+    setState(() {
+      isLoading = false;
+    });
+    captionController.text = "";
+    _image = null;
+    widget.pageController!.animateToPage(
+        0, duration: Duration(microseconds: 200), curve: Curves.easeIn);
   }
 
   @override

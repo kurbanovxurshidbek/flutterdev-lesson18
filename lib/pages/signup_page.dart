@@ -1,6 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instaclone/pages/signin_page.dart';
+import 'package:instaclone/services/auth_service.dart';
+import 'package:instaclone/services/utils_service.dart';
 
+import '../services/prefs_service.dart';
 import 'home_page.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -19,21 +23,44 @@ class _SignUpPageState extends State<SignUpPage> {
   var passwordController = TextEditingController();
   var cpasswordController = TextEditingController();
 
-  _callSignInPage(){
+  _callSignInPage() {
     Navigator.pushReplacementNamed(context, SignInPage.id);
   }
 
-  _callHomePage(){
+  _callHomePage() {
     Navigator.pushReplacementNamed(context, HomePage.id);
   }
 
-  _doSignUp(){
+  _doSignUp() async {
     String fullname = fullnameController.text.toString().trim();
     String email = emailController.text.toString().trim();
     String password = passwordController.text.toString().trim();
     String cpassword = cpasswordController.text.toString().trim();
 
-    _callHomePage();
+    if (fullname.isEmpty || email.isEmpty || password.isEmpty) {
+      Utils.fireToast("Please check your information");
+      return;
+    }
+    if (password != cpassword) {
+      Utils.fireToast("The passwords that you entered are not matched");
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    User? firebaseUser = await AuthService.signUpUser(context, fullname, email, password);
+    if(firebaseUser != null){
+      await Prefs.saveUserId(firebaseUser.uid);
+      _callHomePage();
+    }else{
+      Utils.fireToast("Check your information");
+    }
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -47,15 +74,14 @@ class _SignUpPageState extends State<SignUpPage> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color.fromRGBO(193, 53, 132, 1),
-                  Color.fromRGBO(131, 58, 180, 1),
-                ])),
+              Color.fromRGBO(193, 53, 132, 1),
+              Color.fromRGBO(131, 58, 180, 1),
+            ])),
         child: Stack(
           children: [
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -82,8 +108,8 @@ class _SignUpPageState extends State<SignUpPage> {
                           decoration: const InputDecoration(
                               hintText: "Fullname",
                               border: InputBorder.none,
-                              hintStyle:
-                              TextStyle(fontSize: 17, color: Colors.white54)),
+                              hintStyle: TextStyle(
+                                  fontSize: 17, color: Colors.white54)),
                         ),
                       ),
 
@@ -101,8 +127,8 @@ class _SignUpPageState extends State<SignUpPage> {
                           decoration: const InputDecoration(
                               hintText: "Email",
                               border: InputBorder.none,
-                              hintStyle:
-                              TextStyle(fontSize: 17, color: Colors.white54)),
+                              hintStyle: TextStyle(
+                                  fontSize: 17, color: Colors.white54)),
                         ),
                       ),
 
@@ -121,8 +147,8 @@ class _SignUpPageState extends State<SignUpPage> {
                           decoration: const InputDecoration(
                               hintText: "Password",
                               border: InputBorder.none,
-                              hintStyle:
-                              TextStyle(fontSize: 17, color: Colors.white54)),
+                              hintStyle: TextStyle(
+                                  fontSize: 17, color: Colors.white54)),
                         ),
                       ),
 
@@ -141,8 +167,8 @@ class _SignUpPageState extends State<SignUpPage> {
                           decoration: const InputDecoration(
                               hintText: "Confirm Password",
                               border: InputBorder.none,
-                              hintStyle:
-                              TextStyle(fontSize: 17, color: Colors.white54)),
+                              hintStyle: TextStyle(
+                                  fontSize: 17, color: Colors.white54)),
                         ),
                       ),
 
@@ -161,7 +187,8 @@ class _SignUpPageState extends State<SignUpPage> {
                             child: const Center(
                               child: Text(
                                 "Sign Up",
-                                style: TextStyle(color: Colors.white, fontSize: 17),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 17),
                               ),
                             )),
                       ),
@@ -195,13 +222,14 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ],
             ),
-
-            isLoading ? Center(child: CircularProgressIndicator(),):SizedBox.shrink(),
+            isLoading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : SizedBox.shrink(),
           ],
         ),
       ),
     );
   }
-
-
 }

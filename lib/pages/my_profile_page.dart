@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:instaclone/pages/signin_page.dart';
+import 'package:instaclone/services/auth_service.dart';
 
 import '../model/post_model.dart';
 
@@ -66,7 +67,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
           actions: [
             IconButton(
               onPressed: () {
-                Navigator.pushReplacementNamed(context, SignInPage.id);
+                AuthService.signOutUser(context);
               },
               icon: Icon(
                 Icons.exit_to_app,
