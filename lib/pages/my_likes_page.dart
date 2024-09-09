@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:instaclone/services/db_service.dart';
 
 import '../model/post_model.dart';
 
@@ -11,40 +12,33 @@ class MyLikesPage extends StatefulWidget {
 }
 
 class _MyLikesPageState extends State<MyLikesPage> {
-  String testImg1 =
-      "https://images.unsplash.com/photo-1724805053809-3c09736b2ade?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-  String testImg2 =
-      "https://plus.unsplash.com/premium_photo-1670176447307-c8794f768645?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-  String userImg =
-      "https://images.unsplash.com/photo-1488424138610-252b5576e079?q=80&w=2100&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
   bool isLoading = false;
   List<Post> items = [];
 
   @override
   void initState() {
     super.initState();
-    var post1 = Post(
-        "avg=237290.30ms min=237290.30ms max=237290.30ms count=1", testImg1);
-    post1.fullname = "Xurshidbek";
-    post1.img_user = userImg;
-    post1.date = "2024-08-30 12:23";
-    post1.liked = true;
-    post1.mine = true;
-
-    var post2 = Post(
-        "avg=237290.30ms min=237290.30ms max=237290.30ms count=1", testImg2);
-    post2.fullname = "Begzodbek";
-    post2.img_user = "";
-    post2.date = "2024-08-20 08:20";
-    post2.liked = true;
-    post2.mine = false;
-
-    items.add(post1);
-    items.add(post2);
+    _apiLoadLikes();
   }
 
-  _apiPostUnlike(Post post) {
+  void _apiLoadLikes() async{
+    setState(() {
+      isLoading = true;
+    });
+    var posts = await DbService.loadLikes();
+    setState(() {
+      items = posts;
+      isLoading = false;
+    });
+  }
 
+  _apiPostUnlike(Post post) async{
+    setState(() {
+      isLoading = true;
+    });
+
+    await DbService.likePost(post, false);
+    _apiLoadLikes();
   }
 
   @override

@@ -67,14 +67,14 @@ class _MyUploadPageState extends State<MyUploadPage> {
         });
   }
 
-  _uploadNewPost(){
+  _uploadNewPost() {
     String caption = captionController.text.toString().trim();
-    if(caption.isEmpty) return;
-    if(_image == null) return;
+    if (caption.isEmpty) return;
+    if (_image == null) return;
     _apiPostImage(caption);
   }
 
-  _apiPostImage(String caption)async{
+  _apiPostImage(String caption) async {
     setState(() {
       isLoading = true;
     });
@@ -84,19 +84,20 @@ class _MyUploadPageState extends State<MyUploadPage> {
     _apiStorePost(post);
   }
 
-  _apiStorePost(Post post)async{
+  _apiStorePost(Post post) async {
     Post posted = await DbService.storePost(post);
+    await DbService.storeFeed(posted);
     _moveToFeed();
   }
 
-  _moveToFeed(){
+  _moveToFeed() {
     setState(() {
       isLoading = false;
     });
     captionController.text = "";
     _image = null;
-    widget.pageController!.animateToPage(
-        0, duration: Duration(microseconds: 200), curve: Curves.easeIn);
+    widget.pageController!.animateToPage(0,
+        duration: Duration(microseconds: 200), curve: Curves.easeIn);
   }
 
   @override
@@ -177,7 +178,6 @@ class _MyUploadPageState extends State<MyUploadPage> {
                               ),
                       ),
                     ),
-
                     Container(
                       margin: EdgeInsets.only(left: 10, right: 10, top: 10),
                       child: TextField(
@@ -196,6 +196,11 @@ class _MyUploadPageState extends State<MyUploadPage> {
                 ),
               ),
             ),
+            isLoading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : SizedBox.shrink(),
           ],
         ));
   }

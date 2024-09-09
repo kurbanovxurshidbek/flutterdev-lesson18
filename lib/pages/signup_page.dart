@@ -2,8 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instaclone/pages/signin_page.dart';
 import 'package:instaclone/services/auth_service.dart';
+import 'package:instaclone/services/db_service.dart';
 import 'package:instaclone/services/utils_service.dart';
 
+import '../model/member_model.dart';
 import '../services/prefs_service.dart';
 import 'home_page.dart';
 
@@ -52,7 +54,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
     User? firebaseUser = await AuthService.signUpUser(context, fullname, email, password);
     if(firebaseUser != null){
-      await Prefs.saveUserId(firebaseUser.uid);
+      _saveMemberToLocal(firebaseUser);
+      _saveMemberToCloud(Member(fullname, email));
       _callHomePage();
     }else{
       Utils.fireToast("Check your information");
@@ -61,6 +64,14 @@ class _SignUpPageState extends State<SignUpPage> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  _saveMemberToLocal(User? firebaseUser)async{
+    await Prefs.saveUserId(firebaseUser!.uid);
+  }
+
+  _saveMemberToCloud(Member member)async{
+    await DbService.storeMember(member);
   }
 
   @override
