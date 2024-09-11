@@ -11,6 +11,7 @@ import 'package:instaclone/services/file_service.dart';
 import 'package:instaclone/services/log_service.dart';
 
 import '../model/post_model.dart';
+import '../services/utils_service.dart';
 
 class MyProfilePage extends StatefulWidget {
   const MyProfilePage({super.key});
@@ -101,8 +102,9 @@ class _MyProfilePageState extends State<MyProfilePage> {
       fullname = member.fullname;
       email = member.email;
       img_url = member.img_url;
-      // count_following
-      // count_followers
+      isLoading = false;
+      count_following = member.following_count.toString();
+      count_followers = member.followers_count.toString();
     });
   }
 
@@ -116,6 +118,30 @@ class _MyProfilePageState extends State<MyProfilePage> {
       count_posts = posts.length.toString();
       isLoading = false;
     });
+  }
+
+  _dialogLogout() async {
+    var result = await Utils.dialogCommon(
+        context, "Instagram", "Do you want to logout?", false);
+    if (result) {
+      setState(() {
+        isLoading = true;
+      });
+      AuthService.signOutUser(context);
+    }
+  }
+
+  _dialogRemovePost(Post post) async {
+    var result = await Utils.dialogCommon(context, "Instagram", "Do you want to detele this post?", false);
+
+    if (result) {
+      setState(() {
+        isLoading = true;
+      });
+      DbService.removePost(post).then((value) => {
+        _apiLoadPosts(),
+      });
+    }
   }
 
   @override
@@ -136,7 +162,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
           actions: [
             IconButton(
               onPressed: () {
-                AuthService.signOutUser(context);
+                _dialogLogout();
               },
               icon: Icon(
                 Icons.exit_to_app,
@@ -351,7 +377,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
   Widget _itemOfPost(Post post) {
     return GestureDetector(
         onLongPress: () {
-          //_dialogRemovePost(post);
+          _dialogRemovePost(post);
         },
         child: Container(
           margin: const EdgeInsets.all(5),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:instaclone/services/db_service.dart';
 
 import '../model/member_model.dart';
 
@@ -13,19 +14,48 @@ class _MySearchPageState extends State<MySearchPage> {
   bool isLoading = false;
   var searchController = TextEditingController();
   List<Member> items = [];
-  String userImg =
-      "https://images.unsplash.com/photo-1488424138610-252b5576e079?q=80&w=2100&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+
+  _apiSearchMembers(String keyword) async{
+    var members = await DbService.searchMembers(keyword);
+
+    setState(() {
+      items = members;
+    });
+  }
+
+  _apiUnFollowMember(Member someone)async{
+    setState(() {
+      isLoading = true;
+    });
+    await DbService.unfollowMember(someone);
+    setState(() {
+      someone.followed = false;
+      isLoading = false;
+    });
+
+    DbService.removePostsFromMyFeed(someone);
+  }
+
+  _apiFollowMember(Member someone)async{
+    setState(() {
+      isLoading = true;
+    });
+
+    await DbService.followMember(someone);
+    setState(() {
+      someone.followed = true;
+      isLoading = false;
+    });
+
+    DbService.storePostsToMyFeed(someone);
+
+    //sendNotificationToFollowedMember(someone);
+  }
 
   @override
   void initState() {
     super.initState();
-    Member member1 = new Member("Nusratulloh", "nusratulloh@gmail.com");
-    member1.followed = true;
-    member1.img_url = userImg;
-    Member member2 = new Member("Shoira", "shoira@gmail.com");
-    member2.followed = false;
-    items.add(member1);
-    items.add(member2);
+    _apiSearchMembers("");
   }
 
   @override
@@ -143,13 +173,9 @@ class _MySearchPageState extends State<MySearchPage> {
               GestureDetector(
                 onTap: (){
                   if(member.followed){
-                    setState(() {
-                      member.followed = false;
-                    });
+                    _apiUnFollowMember(member);
                   }else{
-                    setState(() {
-                      member.followed = true;
-                    });
+                    _apiFollowMember(member);
                   }
                 },
                 child: Container(

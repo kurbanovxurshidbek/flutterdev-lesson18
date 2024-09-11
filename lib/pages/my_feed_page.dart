@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:instaclone/services/db_service.dart';
 import '../model/post_model.dart';
+import '../services/utils_service.dart';
 
 class MyFeedPage extends StatefulWidget {
   final PageController? pageController;
@@ -51,6 +52,18 @@ class _MyFeedPageState extends State<MyFeedPage> {
       isLoading = false;
       post.liked = false;
     });
+  }
+
+  _dialogRemovePost(Post post) async {
+    var result = await Utils.dialogCommon(context, "Instagram", "Do you want to delete this post?", false);
+
+    if (result) {
+      setState(() {
+        isLoading = true;
+      });
+      await DbService.removePost(post);
+      _apiLoadFeeds();
+    }
   }
 
   @override
@@ -154,7 +167,9 @@ class _MyFeedPageState extends State<MyFeedPage> {
                 ),
                 post.mine
                     ? IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          _dialogRemovePost(post);
+                        },
                         icon: Icon(Icons.more_horiz),
                       )
                     : SizedBox.shrink(),
