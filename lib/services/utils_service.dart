@@ -21,7 +21,7 @@ class Utils {
   static Future<Map<String, String>> deviceParams() async {
     Map<String, String> params = {};
     var getDeviceId = await PlatformDeviceId.getDeviceId;
-    String fcmToken = "";//await Prefs.loadFCM();
+    String fcmToken = await Prefs.loadFCM();
 
     if (Platform.isIOS) {
       params.addAll({
