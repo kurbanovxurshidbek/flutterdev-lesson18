@@ -7,6 +7,7 @@ import 'package:instaclone/pages/signin_page.dart';
 import 'package:instaclone/services/auth_service.dart';
 
 import '../services/log_service.dart';
+import '../services/notif_service.dart';
 import '../services/prefs_service.dart';
 
 class SplashPage extends StatefulWidget {
@@ -64,7 +65,7 @@ class _SplashPageState extends State<SplashPage> {
       String body = message.notification!.body.toString();
       LogService.i(title);
       LogService.i(body);
-      //NotifService().showLocalNotification(title,body);
+      NotifService().showLocalNotification(title,body);
     });
   }
 

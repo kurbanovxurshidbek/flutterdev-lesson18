@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:instaclone/pages/signin_page.dart';
 import 'package:instaclone/pages/signup_page.dart';
 import 'package:instaclone/pages/splash_page.dart';
+import 'package:instaclone/services/notif_service.dart';
 
 import 'pages/home_page.dart';
 
@@ -16,6 +17,7 @@ void main() async{
       projectId: 'instaclone-2-e33a7',
     ),
   );
+  await NotifService().init();
 
 
   runApp(const MyApp());
